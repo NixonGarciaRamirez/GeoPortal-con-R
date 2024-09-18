@@ -1,17 +1,3 @@
-# Instalasion de librerias
-
-install.packages(c("shiny", "leaflet", "sf", "raster", "tmap", "mapview"))
-
-ui <- fluidPage(
-   titlePanel("Geoportal Básico en R"),
-   leafletOutput("mymap")
-)
-######################################
-
-# Cargar las librerías necesarias
-library(shiny)
-library(leaflet)
-
 # Definir la interfaz de usuario (UI)
 ui <- fluidPage(
   # Título del GeoPortal
