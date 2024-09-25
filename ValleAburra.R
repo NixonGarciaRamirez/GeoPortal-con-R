@@ -50,3 +50,7 @@ server <- function(input, output){
   })
   
 }
+
+
+# Corremos la aplicacion web
+shinyApp(ui, server)
