@@ -21,3 +21,12 @@ opciones <- c("Medellin" = "001",
               "La Estrella" = "380",
               "Sabaneta" = "631"
 )
+
+
+# UI: Generamos la interfaz de usuario 
+ui <- fluidPage(
+  selectInput(inputId = "selESTADO", label = "Seleccione el Municipio",
+              choices = opciones), 
+  textOutput("data"), 
+  leafletOutput("leaflet")
+)
