@@ -41,7 +41,7 @@ server <- function(input, output){
   # Rendereamos el texto
   output$leaflet <- renderLeaflet({
     mun_estado <- mun %>%
-      filter(CVE_ENT == input$selESTADO)
+      filter(MPIO_CCDGO == input$selESTADO)
     
     # Graficamos el mapa resultante
     leaflet(mun_estado) %>%
