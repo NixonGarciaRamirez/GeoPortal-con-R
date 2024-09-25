@@ -30,3 +30,23 @@ ui <- fluidPage(
   textOutput("data"), 
   leafletOutput("leaflet")
 )
+
+
+# Funcion Server (el funcionamiento del programa)
+server <- function(input, output){
+  output$data <- renderText({
+    print(paste0("Número de estado: ",input$selESTADO ))
+  })
+  
+  # Rendereamos el texto
+  output$leaflet <- renderLeaflet({
+    mun_estado <- mun %>%
+      filter(CVE_ENT == input$selESTADO)
+    
+    # Graficamos el mapa resultante
+    leaflet(mun_estado) %>%
+      addTiles() %>%
+      addPolygons()
+  })
+  
+}
