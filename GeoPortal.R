@@ -1,7 +1,7 @@
 # Definir la interfaz de usuario (UI)
 ui <- fluidPage(
   # Título del GeoPortal
-  titlePanel("GeoPortal con Mapas Base y Capas Shapefile/Raster"),
+  titlePanel("GeoPortal con Mapas Base y Capas Shapefile/Raster para el proyecto de Corredores Biologicos"),
   
   # Diseño con panel lateral y panel principal
   sidebarLayout(
