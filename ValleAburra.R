@@ -9,3 +9,15 @@ mun_estado <- mun %>%
 leaflet(mun_estado) %>%
   addTiles() %>%
   addPolygons()
+
+opciones <- c("Medellin" = "001",
+              "Barbosa" = "079",
+              "Bello" = "088",
+              "Caldas" = "129",
+              "Copacabana" = "212",
+              "Envigado" = "266",
+              "Girardora" = "308",
+              "Itagui" = "360",
+              "La Estrella" = "380",
+              "Sabaneta" = "631"
+)
