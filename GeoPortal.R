@@ -1,3 +1,7 @@
+#Ahora vamos a cambiar el codigo un pcco, ya no vamos a añadir las capas desde la interfaz grafica , ahora estas vendran por defecto
+
+
+
 # Definir la interfaz de usuario (UI)
 ui <- fluidPage(
   # Título del GeoPortal
