@@ -41,7 +41,7 @@ server <- function(input, output, session) {
   
   # Renderizar la UI de los valores del atributo
   output$value_ui <- renderUI({
-    selectInput("value", "Selecciona un valor:", choices = unique(shp_data[[input$attribute]]))
+    selectInput("value", "Selecciona un valor:", choices = unique(shp_data[[input$attribute]]), multiple = TRUE)
   })
   
   # Filtrar los datos según el atributo y valor seleccionados
