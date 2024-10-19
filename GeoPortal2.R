@@ -9,8 +9,35 @@ library(raster)
 shp_path <- "D:/NIXON/MI MUNDO PROPIO/08 SIG/SHAPES UTILES PARA ANALISIS/MAPAS DE UBICACION/VALLE DE ABURRA/Valle de aburra.shp"
 shp_data <- st_read(shp_path)
 
+# Filtrar por valor de un atributo
+filtro_shapefile <- shp_data %>%
+  filter(MPIO_CNMBR == "MEDELLÍN")
+
+# Mostrar la tabla de atributos filtrada
+print(filtro_shapefile)
+
 # Obtener los nombres de los atributos del shapefile
 attribute_names <- names(shp_data)
+attribute_names
+
+# Lista con información adicional para los atributos
+info_list <- list(
+  DPTO_CCDGO = "Este atributo representa el codigo del departamento a nivel Nacional",
+  MPIO_CCDGO = "Este atributo representa el codigo de cada munidicio a nivel nacional",
+  MPIO_CDPMP = "Código DANE concatenado departamento y municipio",
+  DPTO_CNMBR = "Nombre del departamento visualizado",
+  MPIO_CNMBR = "Nombre del municipio Visualizado",
+  MPIO_CRSLC = "Año documentado de la creación del municipio",
+  MPIO_NAREA = "Este atributo representa el área total de cada municipio en km².",
+  MPIO_CSMBL = "Simbolo polígono municipio",
+  MPIO_VGNC =  "Año vigencia DANE",
+  MPIO_TIPO =  "Tipo municipio según DIVIPOLA",
+  MPIO_CNMBR = "Este atributo contiene el nombre de cada municipio.",
+  Shape_Leng = "Longitud en Km del perimetro del shp",
+  Shape_Area = "Area en km² del shp"
+  # Agrega más atributos según sea necesario
+)
+
 
 ui <- fluidPage(
   titlePanel("Mapa Base con Esri World Imagery"),
@@ -19,14 +46,14 @@ ui <- fluidPage(
       h3("Filtros"),
       selectInput("attribute", "Selecciona un atributo:", choices = attribute_names, multiple = FALSE),
       uiOutput("value_ui"),
-      actionButton("apply", "Aplicar Filtros"),
+      #actionButton("apply", "Aplicar Filtros"),
       br(), # Espacio adicional
-      h3("Leyenda para el Atributo seleccionado Previamente"),
+      h3("Leyenda para el Atributo"),
       uiOutput("legend_ui") # Usar renderUI correctamente para la leyenda
     ),
     mainPanel(
       leafletOutput("map"),
-      h3("Información Adicional"),
+      h3("Información sobre el Atributo"),
       verbatimTextOutput("info")
     )
   )
@@ -47,7 +74,8 @@ server <- function(input, output, session) {
   # Filtrar los datos según el atributo y valor seleccionados
   filtered_data <- reactive({
     req(input$attribute, input$value)
-    shp_data[shp_data[[input$attribute]] == input$value, ]
+    shp_data %>% 
+      filter(!!sym(input$attribute) %in% input$value)  # Filtrar para selecciones múltiples
   })
   
   # Crear una paleta de colores para la leyenda basada en el atributo seleccionado
@@ -68,26 +96,43 @@ server <- function(input, output, session) {
     output$legend_ui <- renderUI({
       HTML(legend_html)
     })
-  })
-  
-  # Renderizar el mapa
-  output$map <- renderLeaflet({
-    leaflet() %>% 
-      addTiles() %>% 
-      addProviderTiles(providers$Esri.WorldImagery) %>% 
-      setView(lng = -75.45738, lat = 6.64972, zoom = 10) %>% 
-      addPolygons(data = filtered_data(), color = "blue", weight = 2, opacity = 1.0, fillOpacity = 0.5)
+    
+    # Actualizar el mapa con los colores de la leyenda
+    output$map <- renderLeaflet({
+      leaflet(shp_data) %>%
+        addTiles() %>%
+        addProviderTiles(providers$Esri.WorldImagery) %>%
+        setView(lng = -75.45738, lat = 6.34972, zoom = 9) %>%
+        addPolygons(
+          data = filtered_data(),
+          color = ~pal(get(input$attribute)), # Usar la paleta de colores para colorear los polígonos
+          weight = 2,
+          opacity = 1.0,
+          fillOpacity = 0.5,
+          popup = ~paste0(
+            "<strong>Información del Polígono:</strong><br>",
+            paste(
+              sapply(names(filtered_data()), function(colname) {
+                paste0("<b>", colname, ":</b> ", filtered_data()[[colname]])
+              }), collapse = "<br>"
+            )
+          )
+        )
+    })
   })
   
   # Mostrar la información adicional
   output$info <- renderPrint({
-    paste("Atributo seleccionado:", input$attribute, "\nValor del atributo:", input$value)
-  })
+    attribute_info <- info_list[[input$attribute]]  # Obtener información del atributo
+    if (is.null(attribute_info)) {
+      attribute_info <- "No hay información disponible para este atributo."
+    }
+    paste(# "Atributo seleccionado:", input$attribute, 
+          #"\nValor del atributo:", paste(input$value, collapse = ", "),
+           attribute_info)
+     })
 }
 
 shinyApp(ui, server)
 
 
-
-#Activacion de la app
-shinyApp(ui, server)
