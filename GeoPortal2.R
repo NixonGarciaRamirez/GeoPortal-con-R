@@ -53,7 +53,7 @@ ui <- fluidPage(
     ),
     mainPanel(
       leafletOutput("map"),
-      h3("Información sobre el Atributo"),
+      h3("Información Adicional"),
       verbatimTextOutput("info")
     )
   )
@@ -102,37 +102,47 @@ server <- function(input, output, session) {
       leaflet(shp_data) %>%
         addTiles() %>%
         addProviderTiles(providers$Esri.WorldImagery) %>%
-        setView(lng = -75.45738, lat = 6.34972, zoom = 9) %>%
+        setView(lng = -75.45738, lat = 6.30, zoom = 9) %>%
         addPolygons(
           data = filtered_data(),
           color = ~pal(get(input$attribute)), # Usar la paleta de colores para colorear los polígonos
           weight = 2,
           opacity = 1.0,
           fillOpacity = 0.5,
-          popup = ~paste0(
-            "<strong>Información del Polígono:</strong><br>",
-            paste(
-              sapply(names(filtered_data()), function(colname) {
-                paste0("<b>", colname, ":</b> ", filtered_data()[[colname]])
-              }), collapse = "<br>"
-            )
-          )
+          popup = ~paste0("<strong>Atributos del Polígono:</strong><br>",
+                          "DPTO_CCDGO: ", DPTO_CCDGO, "<br>",
+                          "MPIO_CCDGO: ", MPIO_CCDGO, "<br>",
+                          "MPIO_CDPMP: ", MPIO_CDPMP, "<br>",
+                          "DPTO_CNMBR: ", DPTO_CNMBR, "<br>",
+                          "MPIO_CNMBR: ", MPIO_CNMBR, "<br>",
+                          "MPIO_CRSLC: ", MPIO_CRSLC, "<br>",
+                          "MPIO_NAREA: ", MPIO_NAREA, "<br>",
+                          "MPIO_CSMBL: ", MPIO_CSMBL, "<br>",
+                          "MPIO_VGNC: ", MPIO_VGNC, "<br>",
+                          "MPIO_TIPO: ", MPIO_TIPO, "<br>",
+                          "MPIO_CNMBR: ", MPIO_CNMBR, "<br>",
+                          "Shape_Leng: ", Shape_Leng,"<br>",
+                          "Shape_Area: ", Shape_Area
+                          )
         )
+    
     })
   })
-  
-  # Mostrar la información adicional
-  output$info <- renderPrint({
-    attribute_info <- info_list[[input$attribute]]  # Obtener información del atributo
-    if (is.null(attribute_info)) {
-      attribute_info <- "No hay información disponible para este atributo."
-    }
-    paste(# "Atributo seleccionado:", input$attribute, 
-          #"\nValor del atributo:", paste(input$value, collapse = ", "),
-           attribute_info)
-     })
+
+# Mostrar la información adicional
+output$info <- renderPrint({
+  attribute_info <- info_list[[input$attribute]]  # Obtener información del atributo
+  if (is.null(attribute_info)) {
+    attribute_info <- "No hay información disponible para este atributo."
+  }
+  paste(# "Atributo seleccionado:", input$attribute, 
+    #"\nValor del atributo:", paste(input$value, collapse = ", "),
+    attribute_info)
+})
 }
 
 shinyApp(ui, server)
+
+
 
 
